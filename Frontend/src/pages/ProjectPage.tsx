@@ -1,6 +1,8 @@
 import React, { useState, type FormEvent } from "react";
 import { Eye, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { createProject } from "../controller/ProjectController";
+
 export const ProjectPage: React.FC = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [projectDescription, setProjectDescription] = useState<string>("");
@@ -11,19 +13,29 @@ export const ProjectPage: React.FC = () => {
    *
    * @param event The form event
    */
-  const onSubmit = async (event: FormEvent<HTMLFormElement>): void => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    /**
-     * TODO:
-     * Complete the method by calling the `createProject() method in ProjectController.ts`
-     * After creating project, verify that the server response is 200 before alerting the user and redirecting to the '/project-details' page
-     *
-     * BONUS - Add simple validation to the form inputs to not allow empty string and display an error alert
-     */
-    // alert("Successfully created project");
-    // navigate('/project-details');
 
-    event.preventDefault();
+    if (!projectName || !projectDescription) {
+      alert("Please fill in both project name and description.");
+      return;
+    }
+
+    try {
+      await createProject({
+        name: projectName,
+        description: projectDescription,
+      });
+      alert("Successfully created project");
+      navigate("/project-details");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(`Failed to create project: ${error.message}`);
+      } else {
+        alert("An unknown error occurred while creating the project.");
+      }
+      console.error(error);
+    }
   };
 
   return (

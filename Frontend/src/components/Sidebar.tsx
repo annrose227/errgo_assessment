@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({ visible = true }) => {
           </li>
           <li
             className="px-1 py-1 hover:bg-purple-200 flex items-center cursor-pointer"
-            onClick={() => handleNavigation("/messages")}
+            onClick={() => handleNavigation("/chat")}
           >
             <MessageSquare className="h-4 w-4 mr-3" />
             <span>Messages</span>

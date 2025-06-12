@@ -10,9 +10,9 @@ export interface IProject {
 }
 
 export const ProjectSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
+  id: z.string().uuid(),
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
 });
 
 export type Project = z.infer<typeof ProjectSchema>;

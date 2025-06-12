@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import { IProject } from "./models/project.interface";
 import { v4 as uuid } from "uuid";
+import * as http from "http";
+import * as websocket from "websocket";
 
 const app = express();
 const PORT = 3000;
@@ -22,7 +24,54 @@ app.get("/", (_req, res) => {
   res.send("Errgo Backend Interview Module Loaded Successfully!");
 });
 
-app.listen(PORT, () => {
+// Create HTTP server
+const server = http.createServer(app);
+
+// Create WebSocket server
+const wsServer = new websocket.server({
+  httpServer: server,
+  // You should not use autoAcceptConnections for production
+  // applications, as it defeats all standard WebSocket security
+  // measures!
+  autoAcceptConnections: false,
+});
+
+const clients: websocket.connection[] = [];
+const messages: string[] = [];
+
+wsServer.on("request", (request) => {
+  const connection = request.accept(null, request.origin);
+  clients.push(connection);
+  console.log("WebSocket connection accepted.");
+
+  // Send existing messages to the new client
+  messages.forEach((message) => {
+    connection.sendUTF(message);
+  });
+
+  connection.on("message", (message) => {
+    if (message.type === "utf8") {
+      console.log("Received Message: " + message.utf8Data);
+      messages.push(message.utf8Data);
+
+      // Broadcast message to all connected clients
+      clients.forEach((client) => {
+        client.sendUTF(message.utf8Data);
+      });
+    }
+  });
+
+  connection.on("close", (reasonCode, description) => {
+    console.log("Peer " + connection.remoteAddress + " disconnected.");
+    // Remove the closed connection from the clients array
+    const index = clients.indexOf(connection);
+    if (index !== -1) {
+      clients.splice(index, 1);
+    }
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 

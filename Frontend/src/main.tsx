@@ -16,6 +16,7 @@ import TemplatesPage from "./pages/TemplatesPage";
 import SearchPage from "./pages/SearchPage";
 import MessagesPage from "./pages/MessagesPage";
 import ProfilePage from "./pages/ProfilePage";
+import ChatPage from "./pages/ChatPage";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: "search", element: <SearchPage /> },
       { path: "messages", element: <MessagesPage /> },
       { path: "profile", element: <ProfilePage /> },
+      { path: "chat", element: <ChatPage /> },
     ],
   },
 ]);

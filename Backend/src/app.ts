@@ -12,7 +12,7 @@ const projects: IProject[] = [];
 app.use(
   cors({
     origin: "*",
-    methods: ["GET", "POST"],
+    methods: "*",
     credentials: true,
   })
 );
@@ -39,4 +39,24 @@ app.post("/projects", (req, res) => {
 
 app.get("/projects", (req, res) => {
   res.status(200).json(projects);
+});
+
+// DELETE endpoint to remove a project by ID
+app.delete("/projects/:id", (req, res) => {
+  const projectId = req.params.id;
+  const initialLength = projects.length;
+  // Find the index of the project with the given ID
+  const projectIndex = projects.findIndex(
+    (project) => project.id === projectId
+  );
+
+  if (projectIndex === -1) {
+    // If project not found, send 404 response
+    res.status(404).send("Project not found");
+  } else {
+    // Remove the project from the array
+    projects.splice(projectIndex, 1);
+    // Send 200 response with a success message or the deleted project
+    res.status(200).send(`Project with ID ${projectId} deleted successfully`);
+  }
 });

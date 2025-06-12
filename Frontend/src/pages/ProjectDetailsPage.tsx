@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { IProject } from "../models/ProjectModels";
 import { getProjects } from "../controller/ProjectController";
+import { deleteProject } from "../services/ProjectDeleteService"; // Import deleteProject
 
 const ProjectDetailsPage = () => {
   const [projects, setProjects] = useState<IProject[]>([]);
@@ -16,6 +17,23 @@ const ProjectDetailsPage = () => {
 
     initProjects();
   }, []);
+
+  /**
+   * Handles the deletion of a project
+   *
+   * @param projectId The ID of the project to delete
+   */
+  const handleDeleteProject = async (projectId: number) => {
+    try {
+      await deleteProject(projectId);
+      // Remove the deleted project from the state
+      setProjects(projects.filter((project) => project.id !== projectId));
+      alert("Project deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      alert("Failed to delete project.");
+    }
+  };
 
   return (
     <div className="flex flex-col flex-1">
@@ -49,9 +67,16 @@ const ProjectDetailsPage = () => {
                     <div className="font-medium">{project.name}</div>
                   </div>
 
-                  {/* Dummy Button */}
+                  {/* Explore Project Button */}
                   <button className="bg-purple-600 text-white rounded px-4 py-2 text-sm">
                     Explore Project
+                  </button>
+                  {/* Delete Project Button */}
+                  <button
+                    className="bg-red-500 text-white rounded px-4 py-2 text-sm ml-2"
+                    onClick={() => handleDeleteProject(project.id)}
+                  >
+                    Delete Project
                   </button>
                 </div>
 
